@@ -19,8 +19,10 @@ typedef struct {
     int     process_id;
     char    process_name[MAX_LINE_LENGTH];
     int     arrival_time;
-    int     finish_time ;
+    int     CPU_time ;
     int     execution_time;
+    int     IO_time;
+    int     IO_start_time;
     char    process_status[MAX_LINE_LENGTH] ;
     int     first_runtime;
     int     waiting_time;
@@ -72,8 +74,9 @@ int main() {
     // Read the rest of the lines in the file
     while (fgets(line, MAX_LINE_LENGTH, fp) != NULL) {
         // Parse the data from the line and store it in the struct
-        sscanf(line, "%d | %s | %d | %d | %d | %s | %d | %s", &processes[i].process_id, processes[i].process_name, &processes[i].arrival_time, &processes[i].finish_time, &processes[i].execution_time, processes[i].process_status, &processes[i].first_runtime, processes[i].pro_specifier);
+        sscanf(line, "%d | %s | %d | %d | %d | %d | %s", &processes[i].process_id, processes[i].process_name, &processes[i].arrival_time, &processes[i].CPU_time, &processes[i].IO_time, &processes[i].IO_start_time, processes[i].pro_specifier);
         // Increment the index for the processes array
+        processes[i].execution_time = processes[i].CPU_time - processes[i].IO_time;
         i++;
         num_ofDataset_processes++;
     }
@@ -83,7 +86,6 @@ int main() {
 
     // main window
     printf("Start of simulation.\nEnter:\t 1-Create a new process \n\t 2-Start simulation with current dataset\n ");
-
     getIntegerOnly(&choose);   
 
     if(choose == 1)
@@ -94,7 +96,6 @@ int main() {
         while(j < user_processes)
         {
             processes[num_ofDataset_processes+j].process_id = num_ofDataset_processes+j+1;
-            processes[num_ofDataset_processes+j].finish_time = -1;
             strcpy(processes[num_ofDataset_processes+j].process_status,"ready");
             
             printf("Enter process %d Name: ",j+1);
@@ -104,8 +105,16 @@ int main() {
             printf("Enter process %d arrival time: ",j+1);
             getIntegerOnly(&processes[num_ofDataset_processes+j].arrival_time);
             
-            printf("Enter process %d execution time: ",j+1);
-            getIntegerOnly(&processes[num_ofDataset_processes+j].execution_time);
+            printf("Enter process %d CPU time: ",j+1);
+            getIntegerOnly(&processes[num_ofDataset_processes+j].CPU_time);
+
+            printf("Enter process %d IO time: ",j+1);
+            getIntegerOnly(&processes[num_ofDataset_processes+j].IO_time);
+            if(processes[i].IO_time)
+            {
+                printf("Enter process %d IO start time: ",j+1);
+                getIntegerOnly(&processes[num_ofDataset_processes+j].IO_start_time);
+            }
             
             printf("Enter process %d specifier: ",j+1);
             scanf("%S",&processes[num_ofDataset_processes+j].pro_specifier);
@@ -132,7 +141,7 @@ void SJF_sortProcesses(Process *processes, int n)
 {
     for (int i = 0; i < n; i++) {
         for (int j = i+1; j < n; j++) {
-            if (processes[i].execution_time > processes[j].execution_time) {
+            if (processes[i].CPU_time > processes[j].CPU_time) {
                 Process temp = processes[i];
                 processes[i] = processes[j];
                 processes[j] = temp;
@@ -143,18 +152,21 @@ void SJF_sortProcesses(Process *processes, int n)
 
 void SJF_printResults(Process *processes, int n)
 {
-    int spaces = 0;
+    int spaces = 0,IO_counter = 0;
     printf("Process Name\tTurn around\tResponse time\tGantt chart\n");
     for(int i = 0;i < n;i++)
     {
+        int IO_start = processes[i].IO_start_time;
+        int IO_time = processes[i].IO_time;
+
         printf("%s\t\t|",processes[i].process_name);
         printf("\t%d\t|",processes[i].turnAround_time);
         printf("\t%d\t|",processes[i].response_time);
-        for(int j = 0; j < processes[i].execution_time; j++)
+        for(int j = 0; j < processes[i].CPU_time; j++)
         {
             if(i==0)
             {
-                spaces += processes[i].execution_time;
+                spaces += processes[i].CPU_time;
                 break;
             }
             else
@@ -163,13 +175,20 @@ void SJF_printResults(Process *processes, int n)
                 {
                     printf(" ");
                 }
-                spaces += processes[i].execution_time;    
+                spaces += processes[i].CPU_time;    
                 break;
             }
         }
-        for(int j = 0; j < processes[i].execution_time; j++)
+        for(int j = 0; j < processes[i].CPU_time; j++)
         {
-            printf("%s",processes[i].pro_specifier);
+            if(j >= IO_start && IO_time-- > 0)
+            {
+                printf("IO");    
+            }else
+            {
+                printf("%s",processes[i].pro_specifier);
+            }
+            
         }
         printf("\t\v");
     }
