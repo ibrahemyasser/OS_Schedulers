@@ -2,8 +2,10 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 #define MAX_LINE_LENGTH 100
+#define REALLY_BIG_NUM 400
 
 #define SJF_NUM         1
 #define FCFS_NUM        2
@@ -21,6 +23,7 @@ typedef struct {
     int     arrival_time;
     int     CPU_time ;
     int     execution_time;
+    int     remaining_time;
     int     IO_time;
     int     IO_start_time;
     char    process_status[MAX_LINE_LENGTH] ;
@@ -30,6 +33,12 @@ typedef struct {
     int     response_time;
     char    pro_specifier[MAX_LINE_LENGTH];
 } Process;
+
+typedef struct {
+  int start_time;
+  int end_time;
+} ProcessGantt;
+
 
 void SJF_Scheduler(Process *processes, int n);
 void SJF_sortProcesses(Process *processes, int n);
@@ -44,14 +53,15 @@ void calculateResponseTime(Process *processes, int n,int scheduler);
 void calculateTurnaroundTime(Process *processes, int n,int scheduler);
 void choose_scheduler(Process *processes, int n);
 void getIntegerOnly(int *ptr);
+int comparator(const void *a, const void *b);
 
 int main() {
     int num_ofDataset_processes = 0,
     user_processes = 0,
     choose;
-    system("cls");  //clears the screen
-    system("color A");
-    printf("\033[%dm", 30 + 4);
+//    system("cls");  //clears the screen
+//    system("color A");
+//    printf("\033[%dm", 30 + 4);
     // Open the file for reading
     FILE *fp = fopen("dataset.txt", "r");
 
@@ -77,6 +87,7 @@ int main() {
         sscanf(line, "%d | %s | %d | %d | %d | %d | %s", &processes[i].process_id, processes[i].process_name, &processes[i].arrival_time, &processes[i].CPU_time, &processes[i].IO_time, &processes[i].IO_start_time, processes[i].pro_specifier);
         // Increment the index for the processes array
         processes[i].execution_time = processes[i].CPU_time - processes[i].IO_time;
+        processes[i].remaining_time = processes[i].CPU_time;
         i++;
         num_ofDataset_processes++;
     }
@@ -190,14 +201,14 @@ void SJF_printResults(Process *processes, int n)
             }
             
         }
-        printf("\t\v");
+        printf("\n\v");
     }
     printf("\n\n");
 }
 
 void choose_scheduler(Process *processes, int n)
 {
-    printf("Select the scheduler:\n1-First Come First Served\n2-Shortest Job First\n3-Shortest Remaining Time First\n4-Priority-based (non-preemptive)\n5-Priority-based (preemptive)	\n6-Round Robin\n");
+    printf("Select the scheduler:\n1-First Come First Served\n2-Shortest Job First\n3-Shortest Remaining Time First\n4-Priority-based (non-preemptive)\n5-Priority-based (preemptive)   \n6-Round Robin\n");
     getIntegerOnly(&sch_choose);
     switch (sch_choose)
     {
@@ -245,7 +256,108 @@ void PB_P_Scheduler(Process *processes, int n)
 void SRTF_Scheduler(Process *processes, int n)
 {
 
+ProcessGantt gantt[MAX_LINE_LENGTH];
+
+int proc_name[REALLY_BIG_NUM];
+int io[REALLY_BIG_NUM] = {0}; 
+int num_processes = n;
+
+// Sort the processes by arrival time
+  qsort(processes, num_processes, sizeof(Process), comparator);
+
+  // Initialize the current time and the remaining processes
+  int current_time = 0;
+  int remaining_processes = num_processes;
+
+
+  // Run the SRTF algorithm until all processes have completed
+  while (remaining_processes > 0) {
+    // Find the next process to run
+    int next_process = -1;
+    int min_remaining_time = INT_MAX;
+    for (int i = 0; i < num_processes; i++) {
+      if (processes[i].remaining_time > 0 && processes[i].arrival_time <= current_time && processes[i].remaining_time < min_remaining_time) {
+        next_process = i;
+        min_remaining_time = processes[i].remaining_time;
+      }
+    }
+
+    // Output the current state of the CPU
+     // Output the current state of the CPU
+    printf("Time %d: ", current_time);
+    if (next_process == -1) {
+      printf("CPU idle\n");
+    } else {
+        printf("Process %s running\n",processes[next_process].process_name);
+        proc_name[current_time] = processes[next_process].process_id;
+      //printf("Process %d running\n", next_process + 1);
+    }
+
+
+    // Run the next process for one time unit
+    if (next_process != -1) {
+      if (gantt[next_process].start_time == -1) {
+        gantt[next_process].start_time = current_time;
+      }
+      processes[next_process].remaining_time--;
+      current_time++;
+
+      // Check if the current process has an I/O operation at this time
+      //for (int i = 0; i < processes[next_process].num_io_operations; i++) {
+        if (processes[next_process].IO_start_time == current_time) {
+          printf("Time %d: Process %s waiting for I/O\n", current_time, processes[next_process].process_name);
+            io[current_time] = -1;
+
+       //   break;
+        }
+      //}
+
+      // If the process has completed, update its waiting and turn-around times and end time in the Gantt chart
+      if (processes[next_process].remaining_time == 0) {
+        remaining_processes--;
+        processes[next_process].turnAround_time = current_time - processes[next_process].arrival_time;
+        processes[next_process].waiting_time = processes[next_process].turnAround_time - processes[next_process].CPU_time;
+        gantt[next_process].end_time = current_time;
+      }
+    } else {
+      // If there are no processes to run, increment the current time
+      current_time++;
+    }
+  }
+
+
+  // Calculate the average waiting and turn-around times
+  int total_waiting_time = 0;
+  int total_turn_around_time = 0;
+  for (int i = 0; i < num_processes; i++) {
+    total_waiting_time += processes[i].waiting_time;
+    total_turn_around_time += processes[i].turnAround_time;
+  }
+  float avg_waiting_time = (float)total_waiting_time / num_processes;
+  float avg_turn_around_time = (float)total_turn_around_time / num_processes;
+
+    for (size_t i = 0; i < current_time; i++)
+    {
+        int tempo = proc_name[i];
+        int tempio = io[i];
+        if(tempio == -1){
+            printf(" IO ");
+        }
+        printf("%s",processes[tempo - 1].process_name);
+    }
+    
+
+  // Print the results
+  printf("\nProcess\tArrival Time\tBurst Time\tWaiting Time\tTurn-Around Time\n");
+  for (int i = 0; i < num_processes; i++) {
+    printf("%d\t\t%d\t\t%d\t\t%d\t\t%d\n", i + 1, processes[i].arrival_time, processes[i].CPU_time, processes[i].waiting_time, processes[i].turnAround_time);
+  }
+  printf("Average waiting time: %.2f\n", avg_waiting_time);
+  printf("Average turn-around time: %.2f\n", avg_turn_around_time);
+
+
 }
+
 void PB_NP_Scheduler(Process *processes, int n)
 {
 
@@ -301,4 +413,12 @@ void getIntegerOnly(int *ptr){
             printf("(integer Only) ");
         } else break;
     }
+}
+
+
+// Function to compare two processes based on their remaining time
+int comparator(const void *a, const void *b) {
+  Process *p1 = (Process *)a;
+  Process *p2 = (Process *)b;
+  return p1->arrival_time - p2->arrival_time;
 }
