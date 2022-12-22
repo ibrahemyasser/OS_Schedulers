@@ -59,9 +59,9 @@ int main() {
     int num_ofDataset_processes = 0,
     user_processes = 0,
     choose;
-//    system("cls");  //clears the screen
-//    system("color A");
-//    printf("\033[%dm", 30 + 4);
+    system("cls");  //clears the screen
+    system("color A");
+    printf("\033[%dm", 30 + 4);
     // Open the file for reading
     FILE *fp = fopen("dataset.txt", "r");
 
