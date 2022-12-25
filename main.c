@@ -49,11 +49,12 @@ void PB_P_Scheduler(Process *processes, int n);
 void SRTF_Scheduler(Process *processes, int n);
 void PB_NP_Scheduler(Process *processes, int n);
 void RR_Scheduler(Process *processes, int n);
-void calculateResponseTime(Process *processes, int n,int scheduler);
-void calculateTurnaroundTime(Process *processes, int n,int scheduler);
+double calculateResponseTime(Process *processes, int n,int scheduler);
+double calculateTurnaroundTime(Process *processes, int n,int scheduler);
 void choose_scheduler(Process *processes, int n);
 void getIntegerOnly(int *ptr);
 int comparator(const void *a, const void *b);
+void FCFS_sortProcesses(Process *processes, int n);
 
 int main() {
     int num_ofDataset_processes = 0,
@@ -160,6 +161,18 @@ void SJF_sortProcesses(Process *processes, int n)
         }
     }
 }
+void FCFS_sortProcesses(Process *processes, int n)
+{
+    for (int i = 0; i < n; i++) {
+        for (int j = i+1; j < n; j++) {
+            if (processes[i].arrival_time > processes[j].arrival_time) {
+                Process temp = processes[i];
+                processes[i] = processes[j];
+                processes[j] = temp;
+            }
+        }
+    }
+}
 
 void SJF_printResults(Process *processes, int n)
 {
@@ -238,16 +251,51 @@ void choose_scheduler(Process *processes, int n)
 }
 void FCFS_Scheduler(Process *processes, int n)
 {
+    FCFS_sortProcesses(processes,n);
+    printf("Process Name\tTurn around\tResponse time\tGantt chart\n");
+    int tabs=0;
+    double avrage_turn = calculateTurnaroundTime(processes,n,FCFS_NUM);
+    double avrage_res= calculateResponseTime(processes,n,FCFS_NUM);
+    for(int i=0;i<n;i++)
+    {
 
-}
+        printf("%s\t\t|",processes[i].process_name);
+        printf("\t%d\t|",processes[i].turnAround_time);
+        printf("\t%d\t|",processes[i].response_time);
+        for(int c=0;c<tabs;c++)
+        {
+            printf(" ");
+        }
+       for(int j=0;j<processes[i].CPU_time;j++)
+          {
+        if(processes[i].IO_start_time <= j && processes[i].IO_time --> 0)
+           {
+              printf("i");
+
+
+           }
+             else
+             {
+                printf("%s",processes[i].pro_specifier);
+
+             }
+             tabs++;
+          }
+          printf("\n");
+           }
+        printf("average of Turnaround time=%0.2f\n",avrage_turn);
+        printf("average of Response time=%0.2f\n",avrage_res);
+    }
 void SJF_Scheduler(Process *processes, int n)
 {
     printf("\nShortest Job first assumes that all processes arrive at the same time.\n");
     SJF_sortProcesses(processes, n);
-    calculateTurnaroundTime(processes,n,SJF_NUM);
-    calculateResponseTime(processes,n,SJF_NUM);
-    
+    double avrage_turn = calculateTurnaroundTime(processes,n,SJF_NUM);
+    double avrage_res=calculateResponseTime(processes,n,SJF_NUM);
+
     SJF_printResults(processes, n);
+    printf("average of Turnaround time=%0.2f\n",avrage_turn);
+    printf("average of Response time=%0.2f\n",avrage_res);
 }
 void PB_P_Scheduler(Process *processes, int n)
 {
@@ -403,41 +451,81 @@ void RR_Scheduler(Process *processes, int n)
 
 }
 
-void calculateTurnaroundTime(Process *processes, int n,int scheduler)
+double calculateTurnaroundTime(Process *processes, int n,int scheduler)
 {
+    double counter=0,sum=0;
     switch (scheduler)
     {
     case SJF_NUM:
+        counter=0;
+
         processes[0].waiting_time =0;
         processes[0].turnAround_time = processes[0].execution_time;
-        
+        sum=processes[0].turnAround_time;
         for (int i = 1; i < n; i++)
         {
+
             processes[i].waiting_time = processes[i-1].execution_time + processes[i-1].waiting_time;
             processes[i].turnAround_time = processes[i].waiting_time + processes[i].execution_time;
+            counter++;
+            sum += processes[i].turnAround_time;
+        }
+
+        break;
+    case FCFS_NUM:
+        counter=0;
+        processes[0].turnAround_time=processes[0].CPU_time;
+        sum=processes[0].turnAround_time;
+        for(int i=1;i<n;i++)
+        {
+            processes[i].waiting_time = processes[i-1].CPU_time+processes[i-1].waiting_time;
+            processes[i].turnAround_time= processes[i].CPU_time+processes[i].waiting_time-processes[i].arrival_time;
+            counter++;
+            sum += processes[i].turnAround_time;
+
         }
         break;
-    
+
     default:
         break;
     }
+    return (sum/(counter+1));
 }
-void calculateResponseTime(Process *processes, int n,int scheduler)
+double calculateResponseTime(Process *processes, int n,int scheduler)
 {
+    double counter=0,sum=0;
     switch (scheduler)
     {
     case SJF_NUM:
+        counter=0;
+
         processes[0].response_time = processes[0].waiting_time;
+        sum=processes[0].response_time;
         for (int i = 1; i < n; i++)
         {
             processes[i].response_time = processes[i].waiting_time;
+            counter++;
+            sum += processes[i].response_time;
         }
         break;
-    
+    case FCFS_NUM:
+        counter=0;
+        sum=0;
+        processes[0].response_time =0;
+        for (int i = 1; i < n; i++)
+        {
+            processes[i].waiting_time = processes[i-1].CPU_time + processes[i-1].waiting_time;
+            processes[i].response_time = processes[i].waiting_time-processes[i].arrival_time;
+            counter++;
+            sum += processes[i].response_time;
+        }
+        break;
+
+
     default:
         break;
     }
-
+   return (sum/(counter+1));
 }
 
 void getIntegerOnly(int *ptr){
