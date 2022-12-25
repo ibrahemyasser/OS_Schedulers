@@ -10,9 +10,8 @@
 #define SJF_NUM         1
 #define FCFS_NUM        2
 #define SRTF_NUM        3
-#define PB_NP_NUM       4
-#define PB_P_NUM        5
-#define RR_NUM          6
+#define MLFQ            4
+#define RR_NUM          5
 
 int sch_choose;
 char c;
@@ -45,9 +44,8 @@ void SJF_sortProcesses(Process *processes, int n);
 void SJF_printResults(Process *processes, int n);
 
 void FCFS_Scheduler(Process *processes, int n);
-void PB_P_Scheduler(Process *processes, int n);
+void MLFQ_Scheduler(Process *processes,int n);
 void SRTF_Scheduler(Process *processes, int n);
-void PB_NP_Scheduler(Process *processes, int n);
 void RR_Scheduler(Process *processes, int n);
 double calculateResponseTime(Process *processes, int n,int scheduler);
 double calculateTurnaroundTime(Process *processes, int n,int scheduler);
@@ -207,7 +205,7 @@ void SJF_printResults(Process *processes, int n)
         {
             if(j >= IO_start && IO_time-- > 0)
             {
-                printf("IO");    
+                printf("i");    
             }else
             {
                 printf("%s",processes[i].pro_specifier);
@@ -221,7 +219,7 @@ void SJF_printResults(Process *processes, int n)
 
 void choose_scheduler(Process *processes, int n)
 {
-    printf("Select the scheduler:\n1-First Come First Served\n2-Shortest Job First\n3-Shortest Remaining Time First\n4-Priority-based (non-preemptive)\n5-Priority-based (preemptive)   \n6-Round Robin\n");
+    printf("Select the scheduler:\n1-First Come First Served\n2-Shortest Job First\n3-Shortest Remaining Time First\n4-Multi-Level Feedback Queue \n5-Round Robin\n");
     getIntegerOnly(&sch_choose);
     switch (sch_choose)
     {
@@ -235,12 +233,9 @@ void choose_scheduler(Process *processes, int n)
         SRTF_Scheduler(processes,n);
         break;
     case 4:
-        PB_NP_Scheduler(processes,n);
+        MLFQ_Scheduler(processes,n);
         break;
     case 5:
-        PB_P_Scheduler(processes,n);
-        break;
-    case 6:
         RR_Scheduler(processes,n);
         break;    
     
@@ -296,10 +291,6 @@ void SJF_Scheduler(Process *processes, int n)
     SJF_printResults(processes, n);
     printf("average of Turnaround time=%0.2f\n",avrage_turn);
     printf("average of Response time=%0.2f\n",avrage_res);
-}
-void PB_P_Scheduler(Process *processes, int n)
-{
-
 }
 
 void SRTF_Scheduler(Process *processes, int n)
@@ -442,7 +433,7 @@ int num_processes = n;
 
 }
 
-void PB_NP_Scheduler(Process *processes, int n)
+void MLFQ_Scheduler(Process *processes,int n)
 {
 
 }
