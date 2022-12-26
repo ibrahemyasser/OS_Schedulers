@@ -45,7 +45,6 @@ int main() {
         i++;
         num_ofDataset_processes++;
     }
-    Queue_Init();
 
     // Close the file
     fclose(fp);
@@ -83,7 +82,7 @@ int main() {
             }
             
             printf("Enter process %d specifier: ",j+1);
-            scanf("%S",&processes[num_ofDataset_processes+j].pro_specifier);
+            scanf("%c",processes[num_ofDataset_processes+j].pro_specifier);
             
             j++;
         }

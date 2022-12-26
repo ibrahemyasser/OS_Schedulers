@@ -8,6 +8,21 @@
 void FCFS_Scheduler(Process *processes, int n)
 {
     FCFS_sortProcesses(processes,n);
+    
+    CircularPriorityQ readyQueue;
+    readyQueue.maxSize = MAX_SIZE;
+    readyQueue.nProcs = 0;
+    readyQueue.front = 0;
+    readyQueue.rear = 0;
+    
+    for (int i = 0; i < n; i++)
+    {
+        printf("%d\n",processes[i].process_id);
+        insert(&readyQueue,processes[i]);
+    }
+    display(&readyQueue);
+    
+
     printf("Process Name\tTurn around\tResponse time\tGantt chart\n");
     int tabs=0;
     double avrage_turn = calculateTurnaroundTime(processes,n,FCFS_NUM);
