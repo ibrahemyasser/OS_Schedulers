@@ -7,7 +7,7 @@
 
 void FCFS_Scheduler(Process *processes, int n)
 {
-    FCFS_sortProcesses(processes,n);
+   // FCFS_sortProcesses(processes,n);
     
     CircularPriorityQ readyQueue;
     readyQueue.maxSize = MAX_SIZE;
@@ -17,12 +17,15 @@ void FCFS_Scheduler(Process *processes, int n)
     
     for (int i = 0; i < n; i++)
     {
-        printf("%d\n",processes[i].process_id);
+        printf("process ID: %d, arrival time: %d\n", processes[i].process_id, processes[i].arrival_time);
         insert(&readyQueue,processes[i]);
     }
-    display(&readyQueue);
     
+    printf("\n");
+    display(&readyQueue);
+    printf("\n");
 
+    
     printf("Process Name\tTurn around\tResponse time\tGantt chart\n");
     int tabs=0;
     double avrage_turn = calculateTurnaroundTime(processes,n,FCFS_NUM);

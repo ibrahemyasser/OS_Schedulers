@@ -27,7 +27,7 @@ void insert(CircularPriorityQ *q, Process Proc) {
     } else {
         // If Procs, start at end and shift upward if necessary
         for (j = q->rear; j != q->front; j = (j - 1) % q->maxSize) {
-            if (Proc.arrival_time <= q->queArray[abs(j)].arrival_time) {
+            if (Proc.arrival_time < q->queArray[abs(j)].arrival_time) {
                 q->queArray[(abs(j) + 1) % q->maxSize] = q->queArray[abs(j)];
             } else {
                 break;
@@ -35,7 +35,7 @@ void insert(CircularPriorityQ *q, Process Proc) {
         }
 
         // Insert new Proc at correct position
-        if ((j == q->front) && (Proc.arrival_time <= q->queArray[abs(j)].CPU_time)) {
+        if ((j == q->front) && (Proc.arrival_time < q->queArray[abs(j)].arrival_time)) {
             q->queArray[(abs(j) + 1) % q->maxSize] = q->queArray[abs(j)];
             q->queArray[abs(j)] = Proc;
             q->nProcs++;
@@ -77,4 +77,20 @@ void display(CircularPriorityQ *q) {
            printf("process ID: %d, arrival time: %d\n", q->queArray[i].process_id, q->queArray[i].arrival_time);
         }
     }
+}
+
+bool dec1sec(CircularPriorityQ *q) {
+    if (q->nProcs == 0) {
+        printf("all of the process has been executed\n");
+        return 0;
+    } else {
+        for (int i = q->front, j = 0; j < q->nProcs; i = (i + 1) % q->maxSize, j++) {
+           if(q->queArray[i].arrival_time==0)
+            run(q,pop(q));
+            else 
+           { q->queArray[i].arrival_time-=1;
+            q->time +=1;          
+    }}
+}
+       return 1;
 }

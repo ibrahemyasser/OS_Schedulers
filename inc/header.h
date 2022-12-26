@@ -12,6 +12,7 @@
 #define MLFQ            4
 #define RR_NUM          5
 
+#define QUANTUM         2
 // Define a struct to hold the data for each process
 typedef struct {
     int     process_id;
@@ -44,6 +45,7 @@ typedef struct {
     int front;
     int rear;
     int tmp;
+    int time;
 } CircularPriorityQ;
 
 // Priority queue functions
@@ -70,6 +72,7 @@ void choose_scheduler(Process *processes, int n);
 void getIntegerOnly(int *ptr);
 int comparator(const void *a, const void *b);
 void FCFS_sortProcesses(Process *processes, int n);
-
+void run(CircularPriorityQ *q,Process proc);
+bool dec1sec(CircularPriorityQ *q) ;
 
 #endif
