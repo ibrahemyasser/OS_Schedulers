@@ -27,7 +27,7 @@ void insert(CircularPriorityQ *q, Process Proc) {
     } else {
         // If Procs, start at end and shift upward if necessary
         for (j = q->rear; j != q->front; j = (j - 1) % q->maxSize) {
-            if (Proc.arrival_time <= q->queArray[abs(j)].arrival_time) {
+            if (Proc.arrival_time < q->queArray[abs(j)].arrival_time) {
                 q->queArray[(abs(j) + 1) % q->maxSize] = q->queArray[abs(j)];
             } else {
                 break;
@@ -35,7 +35,7 @@ void insert(CircularPriorityQ *q, Process Proc) {
         }
 
         // Insert new Proc at correct position
-        if ((j == q->front) && (Proc.arrival_time <= q->queArray[abs(j)].CPU_time)) {
+        if ((j == q->front) && (Proc.arrival_time < q->queArray[abs(j)].arrival_time)) {
             q->queArray[(abs(j) + 1) % q->maxSize] = q->queArray[abs(j)];
             q->queArray[abs(j)] = Proc;
             q->nProcs++;
