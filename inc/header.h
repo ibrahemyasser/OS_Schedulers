@@ -37,6 +37,24 @@ typedef struct {
   int end_time;
 } ProcessGantt;
 
+typedef struct {
+    int maxSize;
+    Process queArray[MAX_SIZE];
+    int nProcs;
+    int front;
+    int rear;
+    int tmp;
+} CircularPriorityQ;
+
+// Priority queue functions
+void    insert(CircularPriorityQ *q, Process roc);
+Process pop(CircularPriorityQ *q);
+Process peekMin(CircularPriorityQ *q);
+bool    isEmpty(CircularPriorityQ *q);
+bool    isFull(CircularPriorityQ *q);
+void    display(CircularPriorityQ *q);
+void    Queue_Init(void);
+
 void SJF_Scheduler(Process *processes, int n);
 void SJF_sortProcesses(Process *processes, int n);
 void SJF_printResults(Process *processes, int n);

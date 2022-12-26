@@ -45,6 +45,7 @@ int main() {
         i++;
         num_ofDataset_processes++;
     }
+    Queue_Init();
 
     // Close the file
     fclose(fp);

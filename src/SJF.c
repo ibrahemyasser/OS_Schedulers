@@ -12,6 +12,7 @@ void SJF_Scheduler(Process *processes, int n)
     printf("\nShortest Job first assumes that all processes arrive at the same time.\n");
     SJF_sortProcesses(processes, n);
     SJF_IO_Handler(processes, n);
+
     double avrage_turn = calculateTurnaroundTime(processes,n,SJF_NUM);
     double avrage_res=calculateResponseTime(processes,n,SJF_NUM);
 
@@ -22,7 +23,7 @@ void SJF_Scheduler(Process *processes, int n)
 
 void SJF_IO_Handler(Process *processes, int n)
 {
-
+    
 }
 
 void SJF_sortProcesses(Process *processes, int n)
