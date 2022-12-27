@@ -79,18 +79,49 @@ void display(CircularPriorityQ *q) {
     }
 }
 
-bool dec1sec(CircularPriorityQ *q) {
-    if (q->nProcs == 0) {
-        printf("all of the process has been executed\n");
+bool dec1sec(Process *processes,CircularPriorityQ *q,int n) {
+    
+    if ((q->no_completed ==n)) {
+        printf("\n======================================\n");
+        printf("all of the process has been executed\n\n");
         return 0;
     } else {
+        bool ready = false;//  to check if in that second any process was ready 
         for (int i = q->front, j = 0; j < q->nProcs; i = (i + 1) % q->maxSize, j++) {
-           if(q->queArray[i].arrival_time==0)
-            run(q,pop(q));
+            if(q->queArray[i].holder == true) // the the process was the queue holder move to next process
+                continue;
+
+           if(q->queArray[i].arrival_time==0){
+            if(q->queArray[i].first_runtime ==-1)
+                processes[q->queArray[i].process_id-1].first_runtime =q->time;
+            
+            run(processes,q,pop(q));
+            ready = true;
+            }
             else 
            { q->queArray[i].arrival_time-=1;
-            q->time +=1;          
+                      
     }}
+    if(ready == false)
+    q->time +=1; //if there wasn't any process ready in that secod incremen time
 }
        return 1;
+}
+
+void ftime(CircularPriorityQ *q){
+
+ for (int i = q->front, j = 0; j < q->nProcs; i = (i + 1) % q->maxSize, j++) {
+           q->queArray[i].first_runtime =-1;
+           q->queArray[i].holder =false;
+        }
+
+}
+
+void decnonzero(CircularPriorityQ *q){
+
+ for (int i = q->front, j = 0; j < q->nProcs; i = (i + 1) % q->maxSize, j++) {
+           if(q->queArray[i].arrival_time !=0)
+                q->queArray[i].arrival_time -=1;
+        }
+
 }

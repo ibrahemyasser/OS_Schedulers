@@ -39,7 +39,19 @@ double calculateTurnaroundTime(Process *processes, int n,int scheduler)
 
         }
         break;
+    case RR_NUM:
+        counter=0;
+        processes[0].turnAround_time=processes[0].CPU_time;
+        sum=processes[0].turnAround_time;
+        for(int i=1;i<n;i++)
+        {
+            processes[i].waiting_time = processes[i-1].CPU_time+processes[i-1].waiting_time;
+            processes[i].turnAround_time= processes[i].CPU_time+processes[i].waiting_time-processes[i].arrival_time;
+            counter++;
+            sum += processes[i].turnAround_time;
 
+        }
+        break;
     default:
         break;
     }
@@ -75,6 +87,20 @@ double calculateResponseTime(Process *processes, int n,int scheduler)
             sum += processes[i].response_time;
         }
         break;
+
+    case RR_NUM:
+        counter=0;
+        sum=0;
+        processes[0].response_time =0;
+        for (int i = 1; i < n; i++)
+        {
+            processes[i].waiting_time = processes[i-1].CPU_time + processes[i-1].waiting_time;
+            processes[i].response_time = processes[i].waiting_time-processes[i].arrival_time;
+            counter++;
+            sum += processes[i].response_time;
+        }
+        break;
+
 
 
     default:
