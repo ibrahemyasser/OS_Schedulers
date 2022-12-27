@@ -7,7 +7,7 @@
 
 void FCFS_Scheduler(Process *processes, int n)
 {
-   // FCFS_sortProcesses(processes,n);
+   FCFS_sortProcesses(processes,n);
     
     CircularPriorityQ readyQueue;
     readyQueue.maxSize = MAX_SIZE;
