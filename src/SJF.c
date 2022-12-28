@@ -20,12 +20,6 @@ void SJF_Scheduler(Process *processes, int n)
     printf("average of Turnaround time=%0.2f\n",avrage_turn);
     printf("average of Response time=%0.2f\n",avrage_res);
 }
-
-void SJF_IO_Handler(Process *processes, int n)
-{
-    
-}
-
 void SJF_sortProcesses(Process *processes, int n)
 {
     for (int i = 0; i < n; i++) {
@@ -37,6 +31,10 @@ void SJF_sortProcesses(Process *processes, int n)
             }
         }
     }
+}
+void SJF_IO_Handler(Process *processes, int n)
+{
+    
 }
 void SJF_printResults(Process *processes, int n)
 {

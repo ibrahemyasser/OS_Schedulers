@@ -8,6 +8,7 @@
 
 int sch_choose;
 char c;
+int num_processes;
 
 int main() {
     int num_ofDataset_processes = 0,
@@ -86,10 +87,12 @@ int main() {
             
             j++;
         }
+        num_processes=num_ofDataset_processes+user_processes;
         choose_scheduler(processes,num_ofDataset_processes+user_processes);
         
     }else if(choose == 2)
     {   
+        num_processes=num_ofDataset_processes+user_processes;
         choose_scheduler(processes,num_ofDataset_processes+user_processes);
 
     }

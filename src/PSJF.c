@@ -10,8 +10,8 @@ void SRTF_Scheduler(Process *processes, int n)
 {
 
 ProcessGantt gantt[MAX_LINE_LENGTH];
-int proc_name[REALLY_BIG_NUM];
-int io[REALLY_BIG_NUM] = {0}; 
+//int proc_name[REALLY_BIG_NUM];
+//int io[REALLY_BIG_NUM] = {0}; 
 int num_processes = n;
   // Sort the processes by arrival time
   qsort(processes, num_processes, sizeof(Process), comparator);
@@ -44,7 +44,7 @@ int num_processes = n;
       printf("CPU idle\n");
     } else {
       printf("Process %s running\n", processes[next_process].process_name);
-      proc_name[current_time] = processes[next_process].process_id;
+      //proc_name[current_time] = processes[next_process].process_id;
     }
 
 
@@ -75,7 +75,7 @@ int num_processes = n;
 */
 
 //-------------------------------- UNCOMMENT THIS BLOCK TO SEE THE TIME OF I/O TAKE AND MAKE A CONTEXT SWITCH------------------
-
+/*
       int x = current_time;
     if (processes[next_process].IO_start_time  == current_time - gantt[next_process].start_time) {
       for (int i = 0; i < processes[next_process].IO_time; i++,x++) {
@@ -86,7 +86,7 @@ int num_processes = n;
         }
       }
 
-
+*/
 
 
 
@@ -122,7 +122,7 @@ int num_processes = n;
   float average_waiting_time = total_waiting_time / num_processes;
   float average_turnAround_time = total_turnAround_time / num_processes;
 
-
+/*
     for (size_t i = 0; i < current_time; i++)
     {
         int tempo = proc_name[i];
@@ -132,7 +132,7 @@ int num_processes = n;
         }
         printf("%s|",processes[tempo - 1].process_name);
     }
-
+*/
   // Print the results
   printf("\nProcess\tArrival Time\tBurst Time\tWaiting Time\tTurn-Around Time\n");
   for (int i = 0; i < num_processes; i++) {
