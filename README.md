@@ -7,11 +7,8 @@ and it reads processes data from a file and user can add his own
 
 ## Monitoring
 It also implements two monitors...
+
 One for Windows , One for Linux
-
-Note:Linux Monitor should be run inside vs code terminal
-
-
 
 ### Team Members
 
