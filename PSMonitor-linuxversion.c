@@ -34,6 +34,7 @@ void getCurrentRunningProcess(){
     bool flag=false; // flag to be used in case the file couldn't be open , we won't close the dir  twice
     for(int i=0; i<files-65; i++){
             int pid=PIDS[i];
+            if(pid==getpid())continue;  // to not to print itself
             char filename[1000];
             sprintf(filename, "/proc/%d/stat", pid);
             FILE *f = fopen(filename, "r");
@@ -74,4 +75,3 @@ while(1){
 }    
 
 }
-
